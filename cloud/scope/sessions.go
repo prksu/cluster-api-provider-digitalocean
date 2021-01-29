@@ -21,7 +21,6 @@ import (
 	"os"
 
 	"github.com/digitalocean/godo"
-	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 )
 
@@ -36,16 +35,11 @@ func (t *TokenSource) Token() (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (c *DOClients) Session() (*godo.Client, error) {
+func (c *DOClients) Session() *godo.Client {
 	accessToken := os.Getenv("DIGITALOCEAN_ACCESS_TOKEN")
-	if accessToken == "" {
-		return nil, errors.New("env var DIGITALOCEAN_ACCESS_TOKEN is required")
-	}
-
-	oc := oauth2.NewClient(context.Background(), &TokenSource{
+	client := godo.NewClient(oauth2.NewClient(context.Background(), &TokenSource{
 		AccessToken: accessToken,
-	})
+	}))
 
-	client := godo.NewClient(oc)
-	return client, nil
+	return client
 }

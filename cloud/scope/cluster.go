@@ -53,10 +53,7 @@ func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 		params.Logger = klogr.New()
 	}
 
-	session, err := params.DOClients.Session()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create DO session")
-	}
+	session := params.DOClients.Session()
 
 	if params.DOClients.Actions == nil {
 		params.DOClients.Actions = session.Actions
