@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"errors"
 	"flag"
 	"net/http"
 	_ "net/http/pprof" //nolint
@@ -115,6 +116,12 @@ func main() {
 
 	// Initialize event recorder.
 	record.InitFromRecorder(mgr.GetEventRecorderFor("digitalocean-controller"))
+
+	if _, ok := os.LookupEnv("DIGITALOCEAN_ACCESS_TOKEN"); !ok {
+		err := errors.New("no DIGITALOCEAN_ACCESS_TOKEN env var provided")
+		setupLog.Error(err, "unable to lookup digitalocean access token")
+		os.Exit(1)
+	}
 
 	dns, err := networking.NewDNSResolver()
 	if err != nil {
